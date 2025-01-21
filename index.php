@@ -97,51 +97,69 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
                 <!-- Modal for creating a survey -->
                 <div class="modal fade" id="createSurvey" tabindex="-1" aria-labelledby="createSurveyLabel" aria-hidden="true">
-                  <div class="modal-dialog">
-                      <div class="modal-content p-4">
-                          <div class="modal-header">
-                              <h5 class="modal-title" id="createSurveyLabel">New survey</h5>
-                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <form method="POST" action="">
-                            <div class="modal-body py-2">
-                              <div class="mb-3">
-                                  <label for="title" class="col-form-label">Title:</label>
-                                  <input type="text" class="form-control" id="title" name="title" required>
-                              </div>
-                              <div class="mb-3">
-                                  <label for="description" class="col-form-label">Description:</label>
-                                  <textarea class="form-control h-2" id="description" name="description" required></textarea>
-                              </div>
+                    <div class="modal-dialog">
+                        <div class="modal-content p-4">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="createSurveyLabel">New Survey</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary" id="confirmCreateSurvey">Create Survey</button>
-                            </div>
-                          </form>
-                      </div>
-                  </div>
+                            <form id="createSurveyForm" method="POST" action="survey_process.php">
+                                <input type="hidden" name="action" value="createSurvey">
+                                <div class="modal-body py-2">
+                                    <div class="mb-3">
+                                        <label for="title" class="col-form-label">Title:</label>
+                                        <input type="text" class="form-control" id="title" name="title" placeholder="Enter survey title" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="description" class="col-form-label">Description:</label>
+                                        <textarea class="form-control h-2" id="description" name="description" placeholder="Enter survey description" required></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Create Survey</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
+
 
                 <!-- Modal for moving to trash -->
                 <div class="modal fade" id="trashModal" tabindex="-1" aria-labelledby="trashModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content p-4">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="trashModalLabel">Move to trash</h5>
+                                <h5 class="modal-title" id="trashModalLabel">Move to Trash</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="modal-body py-2">
-                                <p>Are you sure you want to move this survey to the trash?</p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-danger" id="confirmMoveToTrash">Move to Trash</button>
-                            </div>
+                            <form id="moveToTrashForm" method="POST" action="survey_process.php">
+                                <!-- Hidden inputs to include survey ID and action -->
+                                <input type="hidden" name="action" value="moveToTrash">
+                                <input type="hidden" name="survey_id" id="trashSurveyId">
+                                <div class="modal-body py-2">
+                                    <p>Are you sure you want to move this survey to the trash?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-danger">Move to Trash</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
-                <div id="alertContainer" class="custom-alert"></div>
+
+
+                <div id="alertContainer" class="custom-alert">
+                     <!-- Display session-based feedback messages -->
+                <?php if (isset($_SESSION['message'])): ?>
+                    <div class="alert alert-<?= $_SESSION['message_type'] ?> alert-dismissible fade show" role="alert">
+                        <?= htmlspecialchars($_SESSION['message']) ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php unset($_SESSION['message'], $_SESSION['message_type']); ?>
+                <?php endif; ?>
+                </div>
 
             </main>
         </div>

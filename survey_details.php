@@ -21,36 +21,6 @@ $survey = new Survey();
 $question = new Question();
 $response = new Response();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Add question
-    if (isset($_POST['add_question'])) {
-        $question_text = trim($_POST['question_text']);
-        $survey_id = $_POST['survey_id'];
-
-        if (!empty($question_text)) {
-            $question->addQuestion($survey_id, $question_text);
-            header("Location: survey_details.php?id=" . $survey_id);
-            exit();
-        } else {
-            $error = "Question text cannot be empty.";
-        }
-    }
-
-    // Edit question
-    if (isset($_POST['edit_question'])) {
-        $question_id = $_POST['question_id'];
-        $question_text = trim($_POST['question_text']);
-        $survey_id = $_POST['survey_id'];
-
-        if (!empty($question_text)) {
-            $question->updateQuestion($question_id, $question_text);
-            header("Location: survey_details.php?id=" . $survey_id);
-            exit();
-        } else {
-            $error = "Question text cannot be empty.";
-        }
-    }
-}
 
 // Get survey details
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
@@ -106,7 +76,6 @@ function getFilteredResponses($survey_id, $question_id, $startDate, $endDate, $r
 <html lang="en">
 <head>
     <?php require_once 'includes/head.php'; ?>
-    <title>Survey Details</title>
 </head>
 <body>
     <?php require_once 'includes/header.php'; ?>
@@ -116,7 +85,6 @@ function getFilteredResponses($survey_id, $question_id, $startDate, $endDate, $r
             <?php require_once 'includes/sidebar.php'; ?>
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <!-- Survey Details -->
                 <div class="px-5 py-4 m-4 bg-light rounded-3 position-relative">
                     <button class="btn btn-light position-absolute top-0 end-0 m-3" type="button" data-bs-toggle="modal" data-bs-target="#editSurvey" title="Edit Survey">
                         <i class="bi bi-pencil-square fs-5"></i>
@@ -216,7 +184,7 @@ function getFilteredResponses($survey_id, $question_id, $startDate, $endDate, $r
                                                 </li>
                                                 <li>
                                                     <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                                                    onclick="setQuestionId(<?php echo $q['question_id']; ?>)">
+                                                    onclick="deleteQuestionModal(<?php echo $survey_id; ?>, <?php echo $q['question_id']; ?>)">
                                                         <i class="bi bi-trash mx-1"></i> Delete
                                                     </a>
                                                 </li>
@@ -233,6 +201,17 @@ function getFilteredResponses($survey_id, $question_id, $startDate, $endDate, $r
                 </div>
 
             <?php require_once 'modals.php'; ?>
+
+            <div id="alertContainer" class="custom-alert">
+                <!-- Display session-based feedback messages -->
+                <?php if (isset($_SESSION['message'])): ?>
+                    <div class="alert alert-<?= $_SESSION['message_type'] ?> alert-dismissible fade show" role="alert">
+                        <?= htmlspecialchars($_SESSION['message']) ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php unset($_SESSION['message'], $_SESSION['message_type']); ?>
+                <?php endif; ?>
+            </div>
 
             </main>
         </div>

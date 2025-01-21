@@ -6,7 +6,8 @@
                 <h5 class="modal-title" id="createSurveyLabel">Edit survey</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" action="">
+            <form id="updateSurveyForm" method="POST" action="survey_details_process.php">
+                <input type="hidden" name="action" value="updateSurvey">
                 <div class="modal-body py-2">
                     <input type="hidden" name="survey_id" id="survey_id" value="<?php echo htmlspecialchars($survey_details['survey_id']); ?>">
 
@@ -18,14 +19,10 @@
                         <label for="description" class="col-form-label">Description:</label>
                         <textarea class="form-control h-2" id="description" name="description" required><?php echo htmlspecialchars($survey_details['description']); ?></textarea>
                     </div>
-                    <div class="mb-3 form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="status" name="status" <?php echo $survey_details['status'] === 'active' ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="status">Activate</label>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="confirmUpdateSurvey" name="update_survey">Update Survey</button>
+                    <button type="submit" class="btn btn-primary" id="confirmUpdateSurvey" name="update_survey">Update Survey</button>
                 </div>
             </form>
         </div>
@@ -41,7 +38,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body py-2">
-                <form method="POST" action="">
+                <form method="POST" action="survey_details_process.php">
+                    <input type="hidden" name="action" value="addQuestion">
                     <input type="hidden" name="survey_id" value="<?php echo htmlspecialchars($survey_details['survey_id']); ?>">
                     <div class="mb-3">
                         <label for="questionText" class="form-label">Question Text</label>
@@ -61,7 +59,8 @@
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content p-4">
-            <form id="editForm" method="POST" action="">
+            <form id="editForm" method="POST" action="survey_details_process.php">
+                <input type="hidden" name="action" value="editQuestion">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editModalLabel">Edit Question</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -87,7 +86,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="confirmUpdateQuestion" name="edit_question">Update Question</button>
+                    <button type="submit" class="btn btn-primary" id="confirmUpdateQuestion" name="edit_question">Update Question</button>
                 </div>
             </form>
         </div>
@@ -98,17 +97,22 @@
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Delete Question</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body py-2">
-                <p>Are you sure you want to delete this question?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteQuestion">Delete</button>
-            </div>
+            <form id="editForm" method="POST" action="survey_details_process.php">
+                <input type="hidden" name="action" value="deleteQuestion">
+                <input type="type" name="survey_id" id="deleteSurveyId">
+                <input type="type" name="question_id" id="questionIdInput">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Delete Question</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-2">
+                    <p>Are you sure you want to delete this question?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger" id="confirmDeleteQuestion">Delete</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
