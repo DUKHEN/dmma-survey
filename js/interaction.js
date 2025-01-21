@@ -1,14 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
     try {
-        // =========================
-        // DOM Element References
-        // =========================
         const slides = document.querySelectorAll('.carousel-slide');
         const thankYouSlide = document.getElementById('thankYouSlide');
         const lottieConfetti = document.getElementById('lottie-confetti');
         const countdownElement = document.getElementById('countdown');
         const reloadNowBtn = document.getElementById('reloadNowBtn');
         const submitButton = document.querySelector('.submit-btn');
+        const submitSurveyBtn = document.getElementById('confirmSubmitSurvey');
+
 
         const dateFilter = document.getElementById('dateFilter');
         const customDateRange = document.getElementById('customDateRange');
@@ -20,37 +19,42 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let countdownTimer;
 
-        // =========================
-        // Slide and Thank You Logic
-        // =========================
         function handleSlideButtons() {
-            slides.forEach(slide => {
+            slides.forEach((slide, index) => {
                 const nextButton = slide.querySelector('.next-btn');
                 const radioButtons = slide.querySelectorAll('input[type="radio"]');
-
-                if (radioButtons.length > 0) {
-                    if (nextButton) nextButton.disabled = true;
-                    if (submitButton) submitButton.disabled = true;
-
-                    radioButtons.forEach(radio => {
-                        radio.addEventListener('change', () => {
-                            if (nextButton) nextButton.disabled = false;
-                            if (submitButton) submitButton.disabled = false;
+        
+                // Disable buttons initially
+                if (nextButton) nextButton.disabled = true;
+                if (submitButton) submitButton.disabled = true;
+        
+                // Add event listener for radio buttons in the slide
+                radioButtons.forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        // Enable the next button for the current slide when an option is selected
+                        if (nextButton) nextButton.disabled = false;
+        
+                        // Check if all slides are answered
+                        const allAnswered = Array.from(slides).every(slide => {
+                            const radios = slide.querySelectorAll('input[type="radio"]');
+                            return radios.length === 0 || Array.from(radios).some(radio => radio.checked);
                         });
+        
+                        // Enable or disable the submit button based on allAnswered
+                        if (submitButton) submitButton.disabled = !allAnswered;
                     });
-                }
+                });
             });
         }
+        
 
         function showThankYouSlide() {
             if (!thankYouSlide) return;
 
-            // Hide all slides and show the Thank You slide
             slides.forEach(slide => slide.classList.add('d-none', 'active'));
             thankYouSlide.classList.remove('d-none');
             thankYouSlide.classList.add('active');
 
-            // Lottie animation for confetti
             if (lottieConfetti) {
                 const animation = lottie.loadAnimation({
                     container: lottieConfetti,
@@ -66,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             }
 
-            // Countdown timer for page reload
             if (countdownElement) {
                 let countdown = 10; // Countdown in seconds
                 countdownElement.textContent = countdown;
@@ -82,7 +85,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }, 1000);
             }
 
-            // Immediate reload on button click
             if (reloadNowBtn) {
                 reloadNowBtn.addEventListener('click', () => {
                     clearInterval(countdownTimer);
@@ -91,9 +93,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // =========================
-        // Filter Settings Management
-        // =========================
         function loadFilterSettings() {
             try {
                 const savedFilterValue = localStorage.getItem('dateFilter');
@@ -136,9 +135,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // =========================
-        // Response Management
-        // =========================
         function updateResponses() {
             try {
                 const showResponses = toggleResponses && toggleResponses.checked;
@@ -158,9 +154,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // =========================
-        // Event Listeners
-        // =========================
         if (applyButton) {
             applyButton.addEventListener('click', function () {
                 updateResponses();
@@ -191,6 +184,45 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
+        if (submitSurveyBtn) {
+            submitSurveyBtn.addEventListener('click', function (event) {
+                event.preventDefault(); // Prevent default behavior
+        
+                const responses = {};
+                const slides = document.querySelectorAll('.carousel-slide');
+        
+                // Collect responses
+                slides.forEach(slide => {
+                    const questionId = slide.dataset.questionId; // Get question ID from data attribute
+                    const selectedInput = slide.querySelector('input[type="radio"]:checked');
+        
+                    if (selectedInput) {
+                        responses[questionId] = selectedInput.value; // Store response by question ID
+                    }
+                });
+        
+                // Check if responses are collected
+                if (Object.keys(responses).length > 0) {
+                    // Show the "Thank You" slide immediately
+                    showThankYouSlide();
+        
+                    // Send AJAX request to submit responses
+                    const surveyId = selectedSurveyId; // Use global selectedSurveyId
+                    sendAjaxRequest(
+                        'response_handler.php', // Handler file for responses
+                        `action=submitSurvey&survey_id=${surveyId}&responses=${encodeURIComponent(JSON.stringify(responses))}`,
+                        'Responses successfully submitted.',
+                        'Failed to submit responses.',
+                        function () {
+                            console.log('Server processing completed.');
+                        }
+                    );
+                } else {
+                    showAlert('No responses selected. Please answer the questions.', 'warning');
+                }
+            });
+        }
+
         if (dateFilter) {
             dateFilter.addEventListener('change', function () {
                 if (dateFilter.value === 'custom' && customDateRange) {
@@ -207,9 +239,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (endDateInput) endDateInput.addEventListener('change', saveFilterSettings);
 
 
-        // =========================
-        // Print Responses Function
-        // =========================
         window.printResponses = function () {
             const surveyTitle = document.querySelector("h1.display-5").textContent.trim();
             const surveyDescription = document.querySelector("p.fs-4").textContent.trim();
@@ -263,12 +292,51 @@ document.addEventListener('DOMContentLoaded', function () {
             window.print();
             document.body.removeChild(printContainer);
         };
+
+            function sendAjaxRequest(url, params, successMessage, errorMessage, onSuccess) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', url, true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                localStorage.setItem('alertMessage', successMessage);
+                localStorage.setItem('alertType', 'success');
+                if (onSuccess) onSuccess();
+            } else {
+                showAlert(errorMessage, 'danger');
+            }
+        };
+        xhr.onerror = function () {
+            showAlert('Failed to communicate with the server.', 'danger');
+        };
+        xhr.send(params);
+    }
+
+    function showAlert(message, type) {
+        let alertContainer = document.getElementById('alertContainer');
+
+        if (!alertContainer) {
+            alertContainer = document.createElement('div');
+            alertContainer.id = 'alertContainer';
+            document.body.appendChild(alertContainer);
+        }
+
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-dismissible fade show`;
+        alert.role = 'alert';
+        alert.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+
+        alertContainer.appendChild(alert);
+
+        setTimeout(() => {
+            alert.remove();
+        }, 5000);
+    }
         
 
-
-        // =========================
-        // Initialization
-        // =========================
         handleSlideButtons();
         loadFilterSettings();
 
