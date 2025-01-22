@@ -41,10 +41,36 @@
                 <form method="POST" action="survey_details_process.php">
                     <input type="hidden" name="action" value="addQuestion">
                     <input type="hidden" name="survey_id" value="<?php echo htmlspecialchars($survey_details['survey_id']); ?>">
+                    
                     <div class="mb-3">
                         <label for="questionText" class="form-label">Question Text</label>
                         <input type="text" class="form-control" id="questionText" name="question_text" placeholder="Enter your question" required>
                     </div>
+                    
+                    <div class="mb-3">
+                        <label for="questionType" class="form-label">Question Type</label>
+                        <select class="form-select" id="questionTypeAdd" name="question_type" required>
+                            <option value="" selected>Choose an option</option>
+                            <option value="rating">Rating</option>
+                            <option value="emotion">Emotion</option>
+                            <option value="thumbs">Thumbs</option>
+                            <option value="text">Text</option>
+                            <option value="dropdown">Dropdown</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Dropdown Options -->
+                    <div id="dropdownOptionsContainerAdd" class="mt-3" style="display: none;">
+                        <label for="dropdownOptions" class="form-label">Dropdown Options</label>
+                        <div id="dropdownOptionsAdd">
+                            <div class="d-flex mb-2">
+                                <input type="text" class="form-control" name="dropdown_options[]" placeholder="Enter option" required>
+                                <button type="button" class="btn btn-danger ms-2 remove-option">Remove</button>
+                            </div>
+                        </div>
+                        <button type="button" id="addOptionButtonAdd" class="btn btn-primary mt-2">Add More</button>
+                    </div>
+                    
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary" id="confirmCreateSurvey" name="add_question">Add Question</button>
@@ -54,6 +80,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Edit Question Modal -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
@@ -75,13 +102,27 @@
 
                     <!-- Question Type Dropdown -->
                     <div class="mb-3">
-                        <label for="updateQuestionType" class="form-label">Question Type</label>
-                        <select class="form-select" id="updateQuestionType" name="question_type" required>
+                        <label for="questionType" class="form-label">Question Type</label>
+                        <select class="form-select" id="questionTypeEdit" name="question_type" required>
+                            <option value="" selected>Choose an option</option>
                             <option value="rating">Rating</option>
                             <option value="emotion">Emotion</option>
                             <option value="thumbs">Thumbs</option>
                             <option value="text">Text</option>
+                            <option value="dropdown">Dropdown</option>
                         </select>
+                    </div>
+
+                    <!-- Dropdown Options -->
+                    <div id="dropdownOptionsContainerEdit" class="mt-3" style="display: none;">
+                        <label for="dropdownOptions" class="form-label">Dropdown Options</label>
+                        <div id="dropdownOptionsEdit">
+                            <div class="d-flex mb-2">
+                                <input type="text" class="form-control" name="dropdown_options[]" placeholder="Enter option" required>
+                                <button type="button" class="btn btn-danger ms-2 remove-option">Remove</button>
+                            </div>
+                        </div>
+                        <button type="button" id="addOptionButtonEdit" class="btn btn-primary mt-2">Add More</button>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -99,8 +140,8 @@
         <div class="modal-content p-4">
             <form id="editForm" method="POST" action="survey_details_process.php">
                 <input type="hidden" name="action" value="deleteQuestion">
-                <input type="type" name="survey_id" id="deleteSurveyId">
-                <input type="type" name="question_id" id="questionIdInput">
+                <input type="hidden" name="survey_id" id="deleteSurveyId">
+                <input type="hidden" name="question_id" id="questionIdInput">
                 <div class="modal-header">
                     <h5 class="modal-title" id="deleteModalLabel">Delete Question</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -168,4 +209,7 @@
         </div>
     </div>
 </div>
+
+
+
 

@@ -32,12 +32,11 @@ class Survey {
         }
     }
 
-    public function updateSurvey($survey_id, $title, $description, $status) {
+    public function updateSurvey($survey_id, $title, $description) {
         try {
-            $stmt = $this->conn->prepare("UPDATE `surveys` SET title = :title, description = :description, status = :status WHERE survey_id = :survey_id");
+            $stmt = $this->conn->prepare("UPDATE `surveys` SET title = :title, description = :description WHERE survey_id = :survey_id");
             $stmt->bindparam(":title", $title);
             $stmt->bindparam(":description", $description);
-            $stmt->bindparam(":status", $status);
             $stmt->bindparam(":survey_id", $survey_id);
             $stmt->execute();
             return $stmt;
@@ -68,6 +67,22 @@ class Survey {
             echo "Error: " . $e->getMessage();
         }
     }
+
+    public function getSurveysByStatus($status) {
+        try {
+            $stmt = $this->conn->prepare("SELECT * FROM `surveys` WHERE status = :status ORDER BY created_at DESC");
+            $stmt->bindParam(':status', $status, PDO::PARAM_STR);
+            $stmt->execute();
+            // Fetch all results as an array
+            $surveys = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $surveys; // Return the array of results
+        } catch (PDOException $e) {
+            error_log("Error fetching surveys by status: " . $e->getMessage());
+            return []; // Return an empty array on failure
+        }
+    }
+    
+
 
     // Redirect URL method
     public function redirect($url){

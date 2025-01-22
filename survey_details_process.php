@@ -23,9 +23,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $survey_id = intval($_POST['survey_id'] ?? 0);
             $redirectUrl = "survey_details.php?id=$survey_id";
             $question_text = trim($_POST['question_text'] ?? '');
-
+            $question_type = $_POST['question_type'] ?? null;
+        
+            // Handle question choices for dropdown
+            $question_choices = null; // Default to null for non-dropdown types
+            if ($question_type === 'dropdown') {
+                $choices = $_POST['dropdown_options'] ?? [];
+                $choices = array_map('trim', $choices); // Trim each choice
+                $choices = array_filter($choices); // Remove empty values
+                $question_choices = !empty($choices) ? json_encode($choices) : null; // Encode to JSON if not empty
+            }
+        
             if ($survey_id > 0 && !empty($question_text)) {
-                if ($question->addQuestion($survey_id, $question_text)) {
+                // Call the addQuestion method, including question_choices
+                if ($question->addQuestion($survey_id, $question_text, $question_type, $question_choices)) {
                     $_SESSION['message'] = 'Question added successfully.';
                     $_SESSION['message_type'] = 'success';
                 } else {
@@ -36,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $_SESSION['message'] = 'Invalid input for adding question.';
                 $_SESSION['message_type'] = 'warning';
             }
-            break;
+            break;        
 
         case 'editQuestion':
             $question_id = intval($_POST['question_id'] ?? 0);

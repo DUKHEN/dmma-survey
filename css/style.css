@@ -136,6 +136,24 @@ input[type="radio"]:not(:checked) + label {
     margin-left: -1.5em;
 }
 
+.nav-item .nav-link.active {
+    background-color: #007bff; /* Blue background */
+    color: white; /* White text */
+    border-radius: 5px; /* Minimal rounded border */
+}
+
+.nav-item .nav-link {
+    color: #495057; /* Default text color */
+    transition: all 0.2s ease-in-out; /* Smooth hover/active transitions */
+}
+
+.nav-item .nav-link:hover {
+    background-color: #f8f9fa; /* Light gray background on hover */
+    border-radius: 5px; /* Maintain rounded border on hover */
+    color: #007bff; /* Change text color on hover */
+}
+
+
 
 /* Animation */
 @keyframes bounce {

@@ -9,7 +9,7 @@ error_reporting(E_ALL);
 require_once 'classes/surveys.php';
 require_once 'classes/questions.php';
 require_once 'classes/responses.php';
-include 'question_type.php';
+require_once 'question_type.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
@@ -141,11 +141,11 @@ function getFilteredResponses($survey_id, $question_id, $startDate, $endDate, $r
                                 <div class="list-group-item my-2 border rounded shadow-sm p-3">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
-                                            <h6 class="mb-1 text-dark">
+                                            <h5 class="mb-1 text-dark">
                                                 <?php echo htmlspecialchars($q['question_text']); ?>
-                                            </h6>
+                                            </h5>
                                             
-                                            <div class="rating disabled d-flex fs-2 mt-3">
+                                            <div class="rating  d-flex fs-2 mt-3">
                                                 <?php 
                                                 $optionCounts = getFilteredResponses($survey_id, $q['question_id'], $startDate, $endDate, $response);
                                                 $slideIndex = $slideIndex ?? 0;

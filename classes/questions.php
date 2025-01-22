@@ -20,11 +20,13 @@ class Question {
     }
 
     // Method to create a new question
-    public function addQuestion($survey_id, $question_text) {
+    public function addQuestion($survey_id, $question_text, $question_type, $question_choices) {
         try {
-            $stmt = $this->conn->prepare("INSERT INTO `questions` (survey_id, question_text) VALUES (:survey_id, :question_text)");
+            $stmt = $this->conn->prepare("INSERT INTO `questions` (survey_id, question_text, question_type, question_choices) VALUES (:survey_id, :question_text, :question_type, :question_choices)");
             $stmt->bindparam(":survey_id", $survey_id);
             $stmt->bindparam(":question_text", $question_text);
+            $stmt->bindparam(":question_type", $question_type);
+            $stmt->bindparam(":question_choices", $question_choices);
             $stmt->execute();
             return $stmt;
         } catch (PDOException $e) {
@@ -45,14 +47,33 @@ class Question {
         }
     }
 
-    public function viewQuestionsBySurvey($survey_id) {
+    public function deleteQuestion($question_id) {
         try {
-            $stmt = $this->conn->prepare("SELECT * FROM questions WHERE survey_id = :survey_id");
-            $stmt->bindparam(":survey_id", $survey_id); // Assuming you have $survey_id set from the URL
-            $stmt->execute();
-            return $stmt;
+            $stmt = $this->conn->prepare("DELETE FROM `questions` WHERE question_id = :question_id");
+            $stmt->bindparam(":question_id", $question_id, PDO::PARAM_INT);
+            return $stmt->execute();
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
+            return false;
+        }
+    }
+
+    public function getQuestionChoices($question_id) {
+        try {
+            $stmt = $this->conn->prepare("SELECT question_choices FROM questions WHERE question_id = :question_id");
+            $stmt->bindParam(":question_id", $question_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            if ($result && !empty($result['question_choices'])) {
+                return json_decode($result['question_choices'], true);
+            }
+    
+            return [];
+    
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return [];
         }
     }
 
