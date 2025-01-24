@@ -178,7 +178,7 @@ function getFilteredResponses($survey_id, $question_id, $startDate, $endDate, $r
                                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownRightMenuButton">
                                                 <li>
                                                     <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editModal"
-                                                    onclick="editQuestionModal(<?php echo $survey_id; ?>, <?php echo $q['question_id']; ?>, `<?php echo htmlspecialchars($q['question_text']); ?>`, `<?php echo htmlspecialchars($q['question_type']); ?>`)">
+                                                    onclick="editQuestionModal(<?php echo $survey_id; ?>, <?php echo $q['question_id']; ?>, `<?php echo htmlspecialchars($q['question_text']); ?>`, `<?php echo htmlspecialchars($q['question_type']); ?>`, `<?php echo htmlspecialchars($q['question_choices']);json_encode($q['question_choices']); ?>`)">
                                                         <i class="bi bi-pencil-square mx-1"></i> Edit
                                                     </a>
                                                 </li>

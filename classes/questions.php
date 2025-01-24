@@ -77,6 +77,26 @@ class Question {
         }
     }
 
+    public function addQuestionChoices($question_id, $choices) {
+        try {
+            $choicesJson = json_encode($choices);
+            $stmt = $this->conn->prepare("UPDATE questions SET question_choices = :question_choices WHERE question_id = :question_id");
+            $stmt->bindParam(":question_choices", $choicesJson, PDO::PARAM_STR);
+            $stmt->bindParam(":question_id", $question_id, PDO::PARAM_INT);
+    
+            if ($stmt->execute()) {
+                return true;
+            }
+    
+            return false;
+    
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
+    }
+    
+
     // Redirect URL method
     public function redirect($url){
       header("Location: $url");

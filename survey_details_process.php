@@ -52,12 +52,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         case 'editQuestion':
             $question_id = intval($_POST['question_id'] ?? 0);
             $question_text = trim($_POST['question_text'] ?? '');
-            $question_type = isset($_POST['question_type']) ? $_POST['question_type'] : null;
+            $question_type = $_POST['question_type'] ?? null;
             $survey_id = intval($_POST['survey_id'] ?? 0);
+            $dropdown_options = $_POST['dropdown_options'] ?? null; // Capture dropdown options
             $redirectUrl = "survey_details.php?id=$survey_id";
-
+        
             if ($question_id > 0 && $survey_id > 0 && !empty($question_text)) {
-                if ($question->updateQuestion($question_id, $question_text, $question_type)) {
+                // Update the question
+                $success = $question->updateQuestion($question_id, $question_text, $question_type);
+        
+                // Handle dropdown options if question type is dropdown
+                if ($success && $question_type === 'dropdown') {
+                    $question->addQuestionChoices($question_id, $dropdown_options);
+                }
+        
+                if ($success) {
                     $_SESSION['message'] = 'Question updated successfully.';
                     $_SESSION['message_type'] = 'success';
                 } else {
@@ -68,7 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $_SESSION['message'] = 'Invalid input for question update.';
                 $_SESSION['message_type'] = 'warning';
             }
+            header("Location: $redirectUrl");
             break;
+            
 
         case 'deleteQuestion':
             $question_id = intval($_POST['question_id'] ?? 0);

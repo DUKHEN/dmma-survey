@@ -36,14 +36,34 @@ function editQuestionModal(surveyId, questionId, questionText, questionType, dro
 
         if (questionType === 'dropdown') {
             const dropdownOptionsContainerEdit = document.getElementById('dropdownOptionsContainerEdit');
-            const dropdownOptionsEdit = document.getElementById('dropdownOptionsEdit');
 
             dropdownOptionsContainerEdit.style.display = 'block';
+            console.log(dropdownOptions);
+            
             populateDropdownOptions(dropdownOptions);
         }
     } else {
         console.error("Modal input elements not found.");
     }
+}
+
+
+function populateDropdownOptions(options) {
+    const dropdownOptionsEdit = document.getElementById('dropdownOptionsEdit');
+
+    const parsedOptions = typeof options === 'string' ? JSON.parse(options) : options;
+
+    dropdownOptionsEdit.innerHTML = ''; 
+
+    parsedOptions.forEach(option => {
+        const optionDiv = document.createElement('div');
+        optionDiv.classList.add('d-flex', 'mb-2');
+        optionDiv.innerHTML = `
+            <input type="text" class="form-control" name="dropdown_options[]" value="${option}" placeholder="Enter option" required>
+            <button type="button" class="btn btn-danger ms-2 remove-option">Remove</button>
+        `;
+        dropdownOptionsEdit.appendChild(optionDiv);
+    });
 }
 
 function showAlert(message, type) {
@@ -90,7 +110,7 @@ questionTypeAdd.addEventListener('change', () => {
         dropdownOptionsContainerAdd.style.display = 'none';
         dropdownOptionsAdd.innerHTML = `
             <div class="d-flex mb-2">
-                <input type="text" class="form-control" name="dropdown_options[]" placeholder="Enter option" required>
+                <input type="text" class="form-control" name="dropdown_options[]" placeholder="Enter option">
                 <button type="button" class="btn btn-danger ms-2 remove-option">Remove</button>
             </div>`;
     }
@@ -104,7 +124,7 @@ questionTypeEdit.addEventListener('change', () => {
         dropdownOptionsContainerEdit.style.display = 'none';
         dropdownOptionsEdit.innerHTML = `
             <div class="d-flex mb-2">
-                <input type="text" class="form-control" name="dropdown_options[]" placeholder="Enter option" required>
+                <input type="text" class="form-control" name="dropdown_options[]" placeholder="Enter option">
                 <button type="button" class="btn btn-danger ms-2 remove-option">Remove</button>
             </div>`;
     }
@@ -115,7 +135,7 @@ addOptionButtonAdd.addEventListener('click', () => {
     const optionDiv = document.createElement('div');
     optionDiv.classList.add('d-flex', 'mb-2');
     optionDiv.innerHTML = `
-        <input type="text" class="form-control" name="dropdown_options[]" placeholder="Enter option" required>
+        <input type="text" class="form-control" name="dropdown_options[]" placeholder="Enter option">
         <button type="button" class="btn btn-danger ms-2 remove-option">Remove</button>
     `;
     dropdownOptionsAdd.appendChild(optionDiv);
@@ -126,7 +146,7 @@ addOptionButtonEdit.addEventListener('click', () => {
     const optionDiv = document.createElement('div');
     optionDiv.classList.add('d-flex', 'mb-2');
     optionDiv.innerHTML = `
-        <input type="text" class="form-control" name="dropdown_options[]" placeholder="Enter option" required>
+        <input type="text" class="form-control" name="dropdown_options[]" placeholder="Enter option">
         <button type="button" class="btn btn-danger ms-2 remove-option">Remove</button>
     `;
     dropdownOptionsEdit.appendChild(optionDiv);
@@ -139,16 +159,4 @@ document.body.addEventListener('click', (e) => {
     }
 });
 
-// Populate Dropdown Options for Edit Modal
-function populateDropdownOptions(options) {
-    dropdownOptionsEdit.innerHTML = ''; // Clear existing options
-    options.forEach(option => {
-        const optionDiv = document.createElement('div');
-        optionDiv.classList.add('d-flex', 'mb-2');
-        optionDiv.innerHTML = `
-            <input type="text" class="form-control" name="dropdown_options[]" value="${option}" placeholder="Enter option" required>
-            <button type="button" class="btn btn-danger ms-2 remove-option">Remove</button>
-        `;
-        dropdownOptionsEdit.appendChild(optionDiv);
-    });
-}
+
