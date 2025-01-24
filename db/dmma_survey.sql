@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 21, 2025 at 11:29 AM
+-- Generation Time: Jan 24, 2025 at 02:01 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -31,16 +31,22 @@ CREATE TABLE `questions` (
   `question_id` int(11) NOT NULL,
   `survey_id` int(11) NOT NULL,
   `question_text` text NOT NULL,
-  `question_type` varchar(50) NOT NULL DEFAULT 'rating'
+  `question_type` varchar(50) NOT NULL DEFAULT 'rating',
+  `question_choices` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `questions`
 --
 
-INSERT INTO `questions` (`question_id`, `survey_id`, `question_text`, `question_type`) VALUES
-(2, 1, 'To what extent do you feel encouraged to participate in class discussions?', 'thumbs'),
-(7, 1, 'What was your instruction in the Registrar\'s Office today?', 'emotion');
+INSERT INTO `questions` (`question_id`, `survey_id`, `question_text`, `question_type`, `question_choices`) VALUES
+(2, 1, 'What was your transaction in the Registrar\'s Office today?', 'thumbs', NULL),
+(7, 1, 'Were you able to claim your requested document at the given time of release?', 'rating', '[\"zczxcxc\"]'),
+(19, 1, 'Was the waiting time a reasonable amount for your transaction?', 'thumbs', NULL),
+(20, 1, 'How would you rate the helpfulness and friendliness of the Registrar personnel during your transaction?', 'emotion', NULL),
+(21, 1, 'How would you rate your overall experience with the Registrar\'s Office today?', 'emotion', NULL),
+(22, 1, 'What is something you would like to share or suggest to help us improve our service?', 'text', NULL),
+(26, 1, 'dfsfsdf', 'dropdown', '[\"dsfsdfsdf\",\"sdfdsfsdf\"]');
 
 -- --------------------------------------------------------
 
@@ -175,7 +181,7 @@ ALTER TABLE `surveys`
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `responses`
